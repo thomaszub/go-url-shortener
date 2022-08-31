@@ -1,0 +1,109 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: URL Shortener
+  description: A URL shortener API to demonstrate usage of the OpenAPI 3.0 specification in Go
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: /api
+paths:
+  /urls:
+    post:
+      description: Creates a new shortened URL
+      operationId: addUrl
+      requestBody:
+        description: URL to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUrl'
+      responses:
+        '200':
+          description: URL response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Url'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /urls/{id}:
+    get:
+      description: Returns a URL based on a single ID
+      operationId: find URL by id
+      parameters:
+        - name: id
+          in: path
+          description: ID of URL to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: URL response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Url'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      description: deletes a shortened URL based on the ID supplied
+      operationId: deleteUrl
+      parameters:
+        - name: id
+          in: path
+          description: ID of URL to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: URL deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Url:
+      allOf:
+        - $ref: '#/components/schemas/NewUrl'
+        - type: object
+          required:
+          - id
+          properties:
+            id:
+              type: string
+
+    NewUrl:
+      type: object
+      required:
+        - url  
+      properties:
+        url:
+          type: string
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
